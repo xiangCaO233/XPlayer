@@ -3,9 +3,9 @@
 
 #include <QMainWindow>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
-#include "xaudio/engin/AudioManager.h"
+class XAudioManager;
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

@@ -1,7 +1,38 @@
-#ifndef X_AUDIO_MANAGER_H
-#define X_AUDIO_MANAGER_H
+#ifndef AUDIO_MANAGER_H
+#define AUDIO_MANAGER_H
 
-#include "AudioEngin.h"
+#include <memory>
+#include <string>
+#include <unordered_map>
+
+class XAudioEngin;
+class XSound;
+class XInputDevice;
+
+class XAudioEngin;
+class XAudioManager;
+class XPlayer;
+
+class XOutputDevice {
+  // 设备sdlid(仅索引)
+  int sdl_id;
+  // 播放器
+  std::shared_ptr<XPlayer> player;
+
+  friend XAudioEngin;
+  friend XAudioManager;
+
+ public:
+  // 设备名称
+  std::string device_name;
+  // 构造XOutputDevice
+  XOutputDevice(int id, std::string name);
+  // 析构XOutputDevice
+  virtual ~XOutputDevice();
+
+  // 创建一个位于该设备的播放器
+  bool creat_player();
+};
 
 class XAudioManager {
  private:
@@ -105,4 +136,4 @@ class XAudioManager {
   std::unordered_map<std::string, int> *get_inputdevice_indices();
 };
 
-#endif  // X_AUDIO_MANAGER_H
+#endif  // AUDIO_MANAGER_H

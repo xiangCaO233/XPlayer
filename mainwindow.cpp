@@ -13,6 +13,7 @@
 #include <ostream>
 
 #include "./ui_mainwindow.h"
+#include "include/AudioManager.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -31,26 +32,13 @@ MainWindow::MainWindow(QWidget *parent)
 
   // 每个输出设备添加一个标签页
   auto output_devices = audio_manager->get_outdevices();
-  if (!output_devices) {
-    std::cerr << "output_devices is nullptr" << std::endl;
-    return;
-  }
-  
+
   for (const auto &[sdl_id, device] : *output_devices) {
     if (sdl_id == -1) continue;
-  
-    if (!device) {
-      std::cerr << "device is nullptr (sdl_id = " << sdl_id << ")" << std::endl;
-      continue;
-    }
-  
-    std::cout << "use_count: " << device.use_count() << std::endl;
-  
-    try {
-      std::cout << "device_name: " << device->device_name << std::endl;
-    } catch (...) {
-      std::cerr << "Exception caught while accessing device_name" << std::endl;
-    }
+    std::cout << "device_name: " << device->device_name << std::endl;
+    auto temp = new QWidget;
+    ui->device_tab_widget->addTab(temp,
+                                  QString::fromStdString(device->device_name));
   }
 }
 
