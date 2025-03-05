@@ -1,14 +1,57 @@
 #include "mainwindow.h"
 
+#include <qglobal.h>
+#include <qlist.h>
+#include <qstandarditemmodel.h>
+#include <qstringliteral.h>
+#include <qwidget.h>
+
 #include <QFileDialog>
+#include <QStandardItemModel>
 #include <filesystem>
+#include <iostream>
+#include <ostream>
 
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+  auto model = new QStandardItemModel(ui->audio_file_browser);
+  model->setHorizontalHeaderLabels(QStringList() << QStringLiteral("句柄")
+                                                 << QStringLiteral("文件"));
+  ui->audio_file_browser->setModel(model);
+  ui->audio_file_browser->setColumnWidth(0,
+                                         ui->audio_file_browser->width() * 0.4);
+  ui->audio_file_browser->setColumnWidth(1,
+                                         ui->audio_file_browser->width() * 0.6);
+
+  // 初始化音频管理器
   audio_manager = XAudioManager::newmanager();
+
+  // 每个输出设备添加一个标签页
+  auto output_devices = audio_manager->get_outdevices();
+  if (!output_devices) {
+    std::cerr << "output_devices is nullptr" << std::endl;
+    return;
+  }
+  
+  for (const auto &[sdl_id, device] : *output_devices) {
+    if (sdl_id == -1) continue;
+  
+    if (!device) {
+      std::cerr << "device is nullptr (sdl_id = " << sdl_id << ")" << std::endl;
+      continue;
+    }
+  
+    std::cout << "use_count: " << device.use_count() << std::endl;
+  
+    try {
+      std::cout << "device_name: " << device->device_name << std::endl;
+    } catch (...) {
+      std::cerr << "Exception caught while accessing device_name" << std::endl;
+    }
+  }
 }
 
 MainWindow::~MainWindow() {
@@ -30,5 +73,16 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
     std::string name;
     auto handle = audio_manager->loadaudio(filepath, name);
     audio_list.try_emplace(name, handle);
+
+    QList<QStandardItem *> audio_row;
+    auto handle_item = new QStandardItem(QString::number(handle));
+    auto name_item = new QStandardItem(QString::fromStdString(name));
+    // 仅可选不可编辑
+    handle_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    name_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    audio_row.append(handle_item);
+    audio_row.append(name_item);
+    static_cast<QStandardItemModel *>(ui->audio_file_browser->model())
+        ->appendRow(audio_row);
   }
 }

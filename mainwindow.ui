@@ -20,7 +20,7 @@
    <property name="locale">
     <locale language="Chinese" country="China"/>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,2">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
     <property name="spacing">
      <number>2</number>
     </property>
@@ -71,7 +71,112 @@
      </widget>
     </item>
     <item>
-     <widget class="QWidget" name="device_container" native="true"/>
+     <widget class="QWidget" name="device_container" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QTabWidget" name="device_tab_widget">
+         <widget class="QWidget" name="tab">
+          <attribute name="title">
+           <string>欢迎</string>
+          </attribute>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <property name="topMargin">
+            <number>0</number>
+           </property>
+           <property name="rightMargin">
+            <number>0</number>
+           </property>
+           <property name="bottomMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <widget class="QWidget" name="widget" native="true">
+             <layout class="QHBoxLayout" name="horizontalLayout_3">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <property name="leftMargin">
+               <number>2</number>
+              </property>
+              <property name="topMargin">
+               <number>2</number>
+              </property>
+              <property name="rightMargin">
+               <number>2</number>
+              </property>
+              <property name="bottomMargin">
+               <number>2</number>
+              </property>
+              <item>
+               <widget class="QLabel" name="label">
+                <property name="font">
+                 <font>
+                  <pointsize>36</pointsize>
+                 </font>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Sunken</enum>
+                </property>
+                <property name="lineWidth">
+                 <number>2</number>
+                </property>
+                <property name="midLineWidth">
+                 <number>2</number>
+                </property>
+                <property name="text">
+                 <string>XPlayerpp</string>
+                </property>
+                <property name="scaledContents">
+                 <bool>false</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="command_line">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>30</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -97,6 +202,7 @@
     <property name="title">
      <string>视图</string>
     </property>
+    <addaction name="show_command_line"/>
    </widget>
    <widget class="QMenu" name="help_menu">
     <property name="title">
@@ -127,6 +233,14 @@
   <action name="close_directory">
    <property name="text">
     <string>关闭目录</string>
+   </property>
+  </action>
+  <action name="show_command_line">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>命令行</string>
    </property>
   </action>
  </widget>
