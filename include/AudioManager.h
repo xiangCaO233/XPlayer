@@ -1,10 +1,12 @@
 #ifndef AUDIO_MANAGER_H
 #define AUDIO_MANAGER_H
 
+#include <condition_variable>
 #include <memory>
 #include <string>
 #include <thread>
 #include <unordered_map>
+#include <vector>
 
 class XAudioEngin;
 class XOutputDevice;

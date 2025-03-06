@@ -40,7 +40,7 @@
       <string>TextLabel</string>
      </property>
      <property name="alignment">
-      <set>Qt::AlignmentFlag::AlignCenter</set>
+      <set>Qt::AlignCenter</set>
      </property>
     </widget>
    </item>
@@ -77,7 +77,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::AudioVolumeMedium"/>
+            <iconset resource="resources.qrc">
+             <normaloff>:/svg/svgs/volumemiddle.svg</normaloff>:/svg/svgs/volumemiddle.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -102,7 +103,7 @@
             <number>100</number>
            </property>
            <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
@@ -112,7 +113,7 @@
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -146,7 +147,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::MediaSeekBackward"/>
+            <iconset resource="resources.qrc">
+             <normaloff>:/svg/svgs/seekbackward.svg</normaloff>:/svg/svgs/seekbackward.svg</iconset>
            </property>
           </widget>
          </item>
@@ -156,7 +158,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::MediaPlaybackPause"/>
+            <iconset resource="resources.qrc">
+             <normaloff>:/svg/svgs/pause.svg</normaloff>:/svg/svgs/pause.svg</iconset>
            </property>
           </widget>
          </item>
@@ -166,7 +169,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::MediaSeekForward"/>
+            <iconset resource="resources.qrc">
+             <normaloff>:/svg/svgs/seekforward.svg</normaloff>:/svg/svgs/seekforward.svg</iconset>
            </property>
           </widget>
          </item>
@@ -176,7 +180,7 @@
       <item>
        <spacer name="horizontalSpacer_2">
         <property name="orientation">
-         <enum>Qt::Orientation::Horizontal</enum>
+         <enum>Qt::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -192,7 +196,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset theme="QIcon::ThemeIcon::DialogInformation"/>
+         <iconset resource="resources.qrc">
+          <normaloff>:/svg/svgs/settings.svg</normaloff>:/svg/svgs/settings.svg</iconset>
         </property>
        </widget>
       </item>
@@ -227,7 +232,7 @@
       <item>
        <widget class="QProgressBar" name="play_progress">
         <property name="value">
-         <number>24</number>
+         <number>0</number>
         </property>
        </widget>
       </item>
@@ -243,6 +248,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>svgs/close.svg</file>
+        <file>svgs/fileopen.svg</file>
+        <file>svgs/folderopen.svg</file>
+        <file>svgs/search.svg</file>
+        <file>svgs/speed.svg</file>
+        <file>svgs/volumehigh.svg</file>
+        <file>svgs/volumelow.svg</file>
+        <file>svgs/volumemiddle.svg</file>
+        <file>svgs/volumemute.svg</file>
+    </qresource>
+</RCC>

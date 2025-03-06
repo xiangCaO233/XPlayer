@@ -40,7 +40,7 @@
         <x>0</x>
         <y>0</y>
         <width>593</width>
-        <height>536</height>
+        <height>552</height>
        </rect>
       </property>
      </widget>
@@ -69,9 +69,15 @@
          </property>
          <item>
           <widget class="QPushButton" name="mute_button">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
            <property name="maximumSize">
             <size>
-             <width>24</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>
@@ -82,7 +88,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::AudioVolumeMedium"/>
+            <iconset theme="QIcon::ThemeIcon::AudioVolumeMedium" resource="resources.qrc">
+             <normaloff>:/svg/svgs/volumemiddle.svg</normaloff>:/svg/svgs/volumemiddle.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -92,7 +99,7 @@
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignmentFlag::AlignBottom">
+         <item>
           <widget class="QSlider" name="volume_slider">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -110,7 +117,7 @@
             <string>设备音量</string>
            </property>
            <property name="layoutDirection">
-            <enum>Qt::LayoutDirection::LeftToRight</enum>
+            <enum>Qt::LeftToRight</enum>
            </property>
            <property name="maximum">
             <number>100</number>
@@ -122,7 +129,7 @@
             <bool>true</bool>
            </property>
            <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
            <property name="invertedAppearance">
             <bool>false</bool>
@@ -131,7 +138,7 @@
             <bool>false</bool>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TickPosition::NoTicks</enum>
+            <enum>QSlider::NoTicks</enum>
            </property>
           </widget>
          </item>
@@ -162,7 +169,7 @@
           <widget class="QPushButton" name="resetspeed_button">
            <property name="maximumSize">
             <size>
-             <width>24</width>
+             <width>16777215</width>
              <height>16777215</height>
             </size>
            </property>
@@ -173,7 +180,8 @@
             <string/>
            </property>
            <property name="icon">
-            <iconset theme="QIcon::ThemeIcon::MediaSkipForward"/>
+            <iconset resource="resources.qrc">
+             <normaloff>:/svg/svgs/speed.svg</normaloff>:/svg/svgs/speed.svg</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -183,7 +191,7 @@
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignmentFlag::AlignBottom">
+         <item>
           <widget class="QSlider" name="speed_slider">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -201,7 +209,7 @@
             <string>设备播放速度</string>
            </property>
            <property name="layoutDirection">
-            <enum>Qt::LayoutDirection::LeftToRight</enum>
+            <enum>Qt::LeftToRight</enum>
            </property>
            <property name="minimum">
             <number>10</number>
@@ -222,7 +230,7 @@
             <bool>true</bool>
            </property>
            <property name="orientation">
-            <enum>Qt::Orientation::Horizontal</enum>
+            <enum>Qt::Horizontal</enum>
            </property>
            <property name="invertedAppearance">
             <bool>false</bool>
@@ -231,7 +239,7 @@
             <bool>false</bool>
            </property>
            <property name="tickPosition">
-            <enum>QSlider::TickPosition::NoTicks</enum>
+            <enum>QSlider::NoTicks</enum>
            </property>
           </widget>
          </item>
@@ -243,6 +251,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

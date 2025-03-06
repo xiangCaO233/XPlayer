@@ -30,6 +30,8 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         audiomanager.h audiomanager.cpp audiomanager.ui
         audioorbitcontroller.h audioorbitcontroller.cpp audioorbitcontroller.ui
+        resources.qrc
+
 
 
     )

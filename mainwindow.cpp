@@ -18,6 +18,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
+
   // 初始化最后一次打开的目录
   auto appPath = QDir(QCoreApplication::applicationDirPath());
 #ifdef __APPLE__
@@ -83,7 +84,6 @@ MainWindow::MainWindow(QWidget *parent)
   for (const auto &[sdl_id, device] : *output_devices) {
     if (sdl_id == -1) continue;
     auto controller = new AudioManager(device);
-    qDebug() << device->device_name;
     ui->device_tab_widget->addTab(controller,
                                   QString::fromStdString(device->device_name));
     auto &mixer = device->player->mixer;
