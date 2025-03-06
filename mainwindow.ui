@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1920</width>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -37,8 +37,8 @@
      <number>2</number>
     </property>
     <item>
-     <widget class="QWidget" name="audio_file_container" native="true">
-      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0">
+     <widget class="QWidget" name="file_container" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,0">
        <property name="spacing">
         <number>2</number>
        </property>
@@ -66,6 +66,19 @@
        </item>
        <item>
         <widget class="QTreeView" name="audio_file_browser"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="file_label">
+         <property name="text">
+          <string>文件目录</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QTreeView" name="file_browser"/>
        </item>
       </layout>
      </widget>
@@ -166,12 +179,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QPlainTextEdit" name="command_line">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>30</height>
-          </size>
+        <widget class="QLineEdit" name="command_line">
+         <property name="font">
+          <font>
+           <pointsize>14</pointsize>
+           <bold>true</bold>
+          </font>
          </property>
         </widget>
        </item>
@@ -185,7 +198,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>800</width>
+     <width>1920</width>
      <height>27</height>
     </rect>
    </property>

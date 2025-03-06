@@ -11,19 +11,39 @@
 #include <filesystem>
 
 #include "./ui_mainwindow.h"
+#include "audiomanager.h"
 #include "include/AudioManager.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
-  auto model = new QStandardItemModel(ui->audio_file_browser);
-  model->setHorizontalHeaderLabels(QStringList() << QStringLiteral("句柄")
-                                                 << QStringLiteral("文件"));
-  ui->audio_file_browser->setModel(model);
-  ui->audio_file_browser->setColumnWidth(0,
-                                         ui->audio_file_browser->width() * 0.4);
-  ui->audio_file_browser->setColumnWidth(1,
-                                         ui->audio_file_browser->width() * 0.6);
+
+  // 音频文件管理器模型
+  auto audio_file_browser_model =
+      new QStandardItemModel(ui->audio_file_browser);
+  audio_file_browser_model->setHorizontalHeaderLabels(
+      QStringList() << QStringLiteral("句柄") << QStringLiteral("文件名")
+                    << QStringLiteral("大小"));
+  ui->audio_file_browser->setModel(audio_file_browser_model);
+  ui->audio_file_browser->header()->setSectionResizeMode(
+      0, QHeaderView::ResizeToContents);
+  ui->audio_file_browser->header()->setSectionResizeMode(1,
+                                                         QHeaderView::Stretch);
+  ui->audio_file_browser->header()->setSectionResizeMode(
+      2, QHeaderView::ResizeToContents);
+
+  // 文件管理器模型
+  auto file_browser_model = new QStandardItemModel(ui->file_browser);
+  file_browser_model->setHorizontalHeaderLabels(
+      QStringList() << QStringLiteral("文件名") << QStringLiteral("大小")
+                    << QStringLiteral("修改"));
+  ui->file_browser->setModel(file_browser_model);
+  ui->audio_file_browser->header()->setSectionResizeMode(0,
+                                                         QHeaderView::Stretch);
+  ui->audio_file_browser->header()->setSectionResizeMode(
+      1, QHeaderView::ResizeToContents);
+  ui->audio_file_browser->header()->setSectionResizeMode(
+      2, QHeaderView::ResizeToContents);
 
   // 初始化音频管理器
   audio_manager = XAudioManager::newmanager();
@@ -33,8 +53,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   for (const auto &[sdl_id, device] : *output_devices) {
     if (sdl_id == -1) continue;
-    auto temp = new QWidget;
-    ui->device_tab_widget->addTab(temp,
+    auto controller = new AudioManager(device);
+    ui->device_tab_widget->addTab(controller,
                                   QString::fromStdString(device->device_name));
   }
 }
@@ -62,11 +82,20 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
     QList<QStandardItem *> audio_row;
     auto handle_item = new QStandardItem(QString::number(handle));
     auto name_item = new QStandardItem(QString::fromStdString(name));
+    auto size =
+        ((double)(*audio_manager->get_audios())[handle]->get_pcm_data_size() *
+         4) /
+        1024.0 / 1024.0;
+    auto size_item = new QStandardItem(QString::number(size, 'f', 2) + "MB");
+
     // 仅可选不可编辑
     handle_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     name_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    size_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     audio_row.append(handle_item);
     audio_row.append(name_item);
+    audio_row.append(size_item);
+
     static_cast<QStandardItemModel *>(ui->audio_file_browser->model())
         ->appendRow(audio_row);
   }
