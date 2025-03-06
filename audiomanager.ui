@@ -30,11 +30,11 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QScrollArea" name="scrollArea">
+    <widget class="QScrollArea" name="audio_orbit_scroll_container">
      <property name="widgetResizable">
       <bool>true</bool>
      </property>
-     <widget class="QWidget" name="scrollAreaWidgetContents">
+     <widget class="QWidget" name="audio_orbit_container">
       <property name="geometry">
        <rect>
         <x>0</x>
