@@ -6,15 +6,14 @@
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
   QString appPath = QCoreApplication::applicationFilePath();
-
-  // 获取 .app 文件所处目录 (上层目录)
-  // MacOS目录
   QDir appDir = QFileInfo(appPath).absoluteDir();
-#ifdef __unix
+
+#ifdef _WIN32
+#else
   while (!appDir.absolutePath().endsWith("/build")) {
     appDir.cdUp();
   }
-#endif  //__unix
+#endif
   // 设置工作目录
   QDir::setCurrent(appDir.absolutePath());
 

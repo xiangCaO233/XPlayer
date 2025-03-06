@@ -9,8 +9,6 @@
 #include <QFileDialog>
 #include <QStandardItemModel>
 #include <filesystem>
-#include <iostream>
-#include <ostream>
 
 #include "./ui_mainwindow.h"
 #include "include/AudioManager.h"
@@ -35,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 
   for (const auto &[sdl_id, device] : *output_devices) {
     if (sdl_id == -1) continue;
-    std::cout << "device_name: " << device->device_name << std::endl;
     auto temp = new QWidget;
     ui->device_tab_widget->addTab(temp,
                                   QString::fromStdString(device->device_name));
