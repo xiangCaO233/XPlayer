@@ -26,6 +26,7 @@ class MainWindow : public QMainWindow {
 
  private:
   Ui::MainWindow* ui;
+  QString last_select_directory;
   // 音频管理器
   std::shared_ptr<XAudioManager> audio_manager;
   // 音频名称列表

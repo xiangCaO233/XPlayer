@@ -3,40 +3,17 @@
 
 #include <memory>
 #include <string>
+#include <thread>
 #include <unordered_map>
-#include <vector>
 
 class XAudioEngin;
-class XSound;
-class XInputDevice;
+class XOutputDevice;
 class XAudioManager;
 class XPlayer;
-class XAuidoMixer;
-
 struct AVFormatContext;
 
-class XOutputDevice {
-  // 设备sdlid(仅索引)
-  int sdl_id;
-  // 播放器
-  std::shared_ptr<XPlayer> player;
-
-  friend XAudioEngin;
-  friend XAudioManager;
-
- public:
-  // 设备名称
-  std::string device_name;
-  // 构造XOutputDevice
-  XOutputDevice(int id, std::string name);
-  // 析构XOutputDevice
-  virtual ~XOutputDevice();
-
-  // 创建一个位于该设备的播放器
-  bool creat_player();
-};
-
 class XSound {
+ public:
   // 句柄(id)
   int handle;
   // pcm声音数据
@@ -48,14 +25,6 @@ class XSound {
   // 音频格式
   AVFormatContext *audio_format;
 
-  friend XAudioManager;
-  friend XAudioEngin;
-  friend XAuidoMixer;
-  friend XAudioManager;
-  friend XAudioEngin;
-  friend XAuidoMixer;
-
- public:
   // 构造XSound
   XSound(int h, std::string n, std::string p, AVFormatContext *f);
   // 析构XSound
@@ -71,16 +40,167 @@ class XSound {
   size_t get_pcm_data_size() const;
 };
 
-class XAudioManager {
- private:
-  // 引擎(唯一)
-  std::unique_ptr<XAudioEngin> engin;
+class XAudioOrbit {
+ public:
+  std::shared_ptr<XSound> sound;
+  // 播放指针
+  double playpos{0.0};
+  // 轨道音量
+  float volume{1.0f};
+  // 轨道指针播放速度
+  float speed{1.0f};
+  // 轨道暂停标识
+  bool paused{false};
+  // 轨道循环标识
+  bool loop{false};
 
+  // 构造XAudioOrbit
+  explicit XAudioOrbit(std::shared_ptr<XSound> audio = nullptr)
+      : sound(audio){};
+  // 析构XAudioOrbit
+  ~XAudioOrbit() = default;
+};
+
+class XAuidoMixer {
+ public:
+  // 全部音轨(句柄-轨道)
+  std::unordered_map<int, std::shared_ptr<XAudioOrbit>> audio_orbits;
+  // 混音线程
+  std::thread mixthread;
+  // 是否已初始化gl上下文
+  static bool isglinitialized;
+  // 着色器源代码
+  static const char *vsource;
+  static const char *fsource;
+  // 目标播放器指针(仅传递方便访问,不释放,其他地方已管理)
+  XPlayer *des_player;
+  // 未知音轨
+  XAudioOrbit unknown_orbit;
+  // 全部音轨的原始数据
+  std::vector<std::vector<float>> src_pcms;
+  // 着色器程序
+  // Shader* shader;
+  // 顶点着色器源代码
+  static const char *vertexshader_source;
+  // 片段着色器源代码
+  static const char *fragmentshader_source;
+
+  // 混合音频
+  void mix(const std::vector<std::shared_ptr<XAudioOrbit>> &src_sounds,
+           std::vector<float> &mixed_pcm, float global_volume);
+  void mix_pcmdata(std::vector<float> &mixed_pcm, float global_volume);
+  void resample(std::vector<float> &pcm, size_t des_size);
+  void reset_pcms();
+  // 向播放器发送数据的线程函数
+  void send_pcm_thread();
+  // 添加音频轨道
+  void add_orbit(const std::shared_ptr<XSound> &sound);
+  // 移除音频轨道
+  bool remove_orbit(const std::shared_ptr<XSound> &sound);
+  // 设置循环标识
+  void setloop(int audio_handle, bool isloop);
+  // 构造XAuidoMixer
+  explicit XAuidoMixer(XPlayer *player);
+  // 析构XAuidoMixer
+  virtual ~XAuidoMixer();
+};
+
+class XInputDevice {
+ public:
+  // 设备名称
+  std::string device_name;
+  // 设备sdlid
+  int sdl_id;
+
+  // 构造XInputDevice
+  XInputDevice(int id, std::string &name);
+  // 析构XInputDevice
+  virtual ~XInputDevice();
+};
+
+class XPlayer {
+ public:
+  // 构造XPlayer
+  XPlayer();
+  // 析构XPlayer
+  virtual ~XPlayer();
+  // 播放线程运行状态
+  bool running;
+  // 播放暂停状态
+  bool paused;
+  // 全局音量
+  float global_volume;
+  // 全局速度
+  float global_speed{1.0f};
+  // 数据请求状态
+  bool isrequested{false};
+
+  // 混音互斥锁
+  std::mutex mix_mutex;
+  // 条件变量,通知混音器请求数据更新
+  std::condition_variable mixercv;
+
+  // 缓冲区互斥锁
+  std::mutex player_mutex;
+  // 条件变量,通知数据更新
+  std::condition_variable cv;
+
+  // sdl播放线程
+  std::thread sdl_playthread;
+
+  // 此播放器绑定的混音器
+  std::unique_ptr<XAuidoMixer> mixer;
+  // 输出设备索引
+  int outdevice_index{-1};
+
+  void player_thread();
+
+  // 设置设备索引
+  void set_device_index(int device_index);
+  void set_player_volume(float v);
+
+  // 开始
+  void start();
+  // 终止
+  void stop();
+  // 暂停
+  void pause();
+  // 继续
+  void resume();
+  // 更改全局播放速度(变调)
+  void ratio(float speed);
+
+  // sdl播放回调函数
+  static void sdl_audio_callback(void *userdata, uint8_t *stream, int len);
+};
+
+class XOutputDevice {
+ public:
+  // 设备sdlid(仅索引)
+  int sdl_id;
+  // 设备名称
+  std::string device_name;
+  // 播放器
+  std::shared_ptr<XPlayer> player;
+
+  // 构造XOutputDevice
+  XOutputDevice(int id, std::string &name);
+  // 析构XOutputDevice
+  virtual ~XOutputDevice();
+
+  // 创建一个位于该设备的播放器
+  bool creat_player();
+};
+
+class XAudioManager {
  public:
   // 构造XAudioManager音频管理器
   XAudioManager();
   // 析构XAudioManager
   virtual ~XAudioManager();
+
+  // 引擎(唯一)
+  std::unique_ptr<XAudioEngin> engin;
 
   static std::shared_ptr<XAudioManager> newmanager();
   // 启用日志
