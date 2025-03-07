@@ -26,11 +26,13 @@ class DeviceManager : public QWidget {
   void add_audio_orbit(std::shared_ptr<XAudioOrbit> &audioorbit);
   // 移除音频轨道
   void remove_audio_orbit(std::shared_ptr<XAudioOrbit> &audioorbit);
+ public slots:
+  // 轨道暂停按钮点击信号槽
+  void on_orbit_pausebutton_clicked();
 
  private:
   Ui::DeviceManager *ui;
   QSpacerItem *spacer;
-  std::shared_ptr<XAudioManager> manager;
   // 此设备的音频管理器所保存的所有音频轨道
   std::unordered_map<std::shared_ptr<XAudioOrbit>, AudioOrbitController *>
       audio_orbits;
