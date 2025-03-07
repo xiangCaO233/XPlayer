@@ -170,7 +170,22 @@ void AudioOrbitController::on_seek_forward_clicked() {
 }
 
 // 静音按键事件
-void AudioOrbitController::on_mute_button_clicked() {}
+void AudioOrbitController::on_mute_button_clicked() {
+  auto v = (float)ui->volume_slider->value();
+  // 切换静音
+  if (v != 0) {
+    last_volume = v / 100.0f;
+    ui->current_volume_label->setText(QString::number(0) + "%");
+    xaudio_orbit->volume = 0.0f;
+    ui->volume_slider->setValue(0);
+    update_volume_button_icon(0);
+  } else {
+    ui->current_volume_label->setText(QString::number(last_volume) + "%");
+    ui->volume_slider->setValue((int)(last_volume * 100.0f));
+    xaudio_orbit->volume = last_volume;
+    update_volume_button_icon((int)(last_volume * 100.0f));
+  }
+}
 
 // 音量条值变化事件
 void AudioOrbitController::on_volume_slider_valueChanged(int value) {
@@ -181,20 +196,7 @@ void AudioOrbitController::on_volume_slider_valueChanged(int value) {
 }
 
 // 音频轨道设置按键事件
-void AudioOrbitController::on_audio_info_button_clicked() {
-  auto v = (float)ui->volume_slider->value();
-  // 切换静音
-  if (v != 0) {
-    last_volume = v / 100.0f;
-    ui->current_volume_label->setText(QString::number(0) + "%");
-    xaudio_orbit->volume = 0.0f;
-    update_volume_button_icon(0);
-  } else {
-    ui->current_volume_label->setText(QString::number(last_volume) + "%");
-    xaudio_orbit->volume = last_volume;
-    update_volume_button_icon((int)(last_volume * 100.0f));
-  }
-}
+void AudioOrbitController::on_audio_info_button_clicked() {}
 
 // 更新音量按钮图标
 void AudioOrbitController::update_volume_button_icon(int value) {

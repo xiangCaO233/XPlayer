@@ -124,10 +124,12 @@ void DeviceManager::on_mute_button_clicked() {
     last_volume = v / 100.0f;
     ui->current_volume_label->setText(QString::number(0) + "%");
     device->player->set_player_volume(0.0f);
+    ui->volume_slider->setValue(0);
     update_volume_button_icon(0);
   } else {
     ui->current_volume_label->setText(QString::number(last_volume) + "%");
     device->player->set_player_volume(last_volume);
+    ui->volume_slider->setValue((int)(last_volume * 100.0f));
     update_volume_button_icon((int)(last_volume * 100.0f));
   }
 }

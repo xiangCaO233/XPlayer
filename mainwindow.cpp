@@ -3,6 +3,7 @@
 #include <qfilesystemmodel.h>
 #include <qglobal.h>
 #include <qlist.h>
+#include <qmessagebox.h>
 #include <qstandarditemmodel.h>
 #include <qstringliteral.h>
 #include <qwidget.h>
@@ -120,13 +121,20 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
     } else if (file_info.isFile()) {
       QDir file_dir(file);
       file_dir.cdUp();
-      last_select_directory = file_dir.dirName();
+      last_select_directory = file_dir.absolutePath();
     }
 
     const auto filepath = file.toStdString();
     std::string name;
     // 使用XAudioLib加载音频
     auto handle = audio_manager->loadaudio(filepath, name);
+    auto it = audio_list.find(name);
+    if (it != audio_list.end()) {
+      QMessageBox::about(
+          this, "载入失败",
+          "音频[" + QString::fromStdString(name) + "]已经载入过");
+      return;
+    }
     audio_list.try_emplace(name, handle);
 
     // 构建音频条目加入音频管理器
