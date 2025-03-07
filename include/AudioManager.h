@@ -14,6 +14,7 @@ class XAudioEngin;
 class XOutputDevice;
 class XAudioManager;
 class XPlayer;
+class Shader;
 struct AVFormatContext;
 
 enum class transfertype;
@@ -41,6 +42,15 @@ class Config {
 
   // 保存路径
   static std::string config_file_path;
+
+  // static void to_json(json& j);
+  // static void from_json(const json& j);
+
+  // 载入配置
+  static void load();
+
+  // 保存配置
+  static void save();
 };
 
 namespace xutil {
@@ -48,6 +58,33 @@ int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate, int channels);
 size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
                            int channels);
 }  // namespace xutil
+
+class ringbuffer {
+  // 缓冲区本体
+  std::shared_ptr<float[]> buffer;
+  // 读取缓冲区
+  std::shared_ptr<float[]> readbuffer;
+  // 缓冲区大小（包含1个空闲单元）
+  size_t buffersize;
+  // 读取指针
+  size_t readpos;
+  // 写入指针
+  size_t writepos;
+
+ public:
+  explicit ringbuffer(size_t size);
+  ~ringbuffer();
+
+  // 可读数据量
+  [[nodiscard]] size_t readable() const;
+  // 可写入容量
+  [[nodiscard]] size_t available() const;
+  // 写数据
+  bool write(const float *data, size_t size);
+  bool write(float value, size_t size);
+  // 读数据
+  bool read(float *&data, size_t size);
+};
 
 class XSound {
  public:
@@ -117,6 +154,8 @@ class XAuidoMixer {
   std::thread mixthread;
   // 是否已初始化gl上下文
   static bool isglinitialized;
+  // 着色器(opengl)
+  static std::unique_ptr<Shader> glshader;
   // 着色器源代码
   static const char *vsource;
   static const char *fsource;
@@ -142,8 +181,9 @@ class XAuidoMixer {
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
   // 添加音频轨道
-  void add_orbit(const std::shared_ptr<XSound> &sound);
+  void add_orbit(const std::shared_ptr<XAudioOrbit> &sound);
   // 移除音频轨道
+  bool remove_orbit(const std::shared_ptr<XAudioOrbit> &sound);
   bool remove_orbit(const std::shared_ptr<XSound> &sound);
   // 设置循环标识
   void setloop(int audio_handle, bool isloop);
@@ -182,24 +222,29 @@ class XPlayer {
   float global_speed{1.0f};
   // 数据请求状态
   bool isrequested{false};
-
   // 混音互斥锁
   std::mutex mix_mutex;
   // 条件变量,通知混音器请求数据更新
   std::condition_variable mixercv;
-
   // 缓冲区互斥锁
   std::mutex player_mutex;
   // 条件变量,通知数据更新
   std::condition_variable cv;
-
   // sdl播放线程
   std::thread sdl_playthread;
-
+  // 环形音频处理缓冲区
+  ringbuffer rbuffer;
   // 此播放器绑定的混音器
   std::unique_ptr<XAuidoMixer> mixer;
   // 输出设备索引
   int outdevice_index{-1};
+
+  // sdl音频规范(实际)
+  void *obtained_spec{};
+  // sdl音频规范(期望)
+  void *desired_spec{};
+  // 播放设备
+  void *device_id{};
 
   void player_thread();
 

@@ -189,7 +189,7 @@ void MainWindow::on_audio_file_browser_doubleClicked(const QModelIndex &index) {
     auto orbit = std::make_shared<XAudioOrbit>(sound);
     orbit->volume = (float)volume / 100.0f;
     orbit->speed = (float)speed / 100.0f;
-    orbit->paused = autoplay;
+    orbit->paused = !autoplay;
     orbit->loop = isloop;
     device_controller->add_audio_orbit(orbit);
   }

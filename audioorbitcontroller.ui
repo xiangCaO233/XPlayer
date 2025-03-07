@@ -37,7 +37,7 @@
       </font>
      </property>
      <property name="text">
-      <string>TextLabel</string>
+      <string>audio_title</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -263,7 +263,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QProgressBar" name="play_progress">
+       <widget class="ClickableProgressBar" name="play_progress">
         <property name="value">
          <number>0</number>
         </property>
@@ -281,6 +281,13 @@
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ClickableProgressBar</class>
+   <extends>QProgressBar</extends>
+   <header location="global">clickableprogressbar.h</header>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="resources.qrc"/>
  </resources>

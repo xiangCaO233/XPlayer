@@ -20,7 +20,10 @@ class TimeCallback : public PlayposCallBack {
   virtual void playpos_call(double playpos) override {
     // 回调中设置当前播放时间
     QString formated_text;
-    audio_orbit_controller->format_time((size_t)playpos, formated_text);
+    auto time_milliseconds = xutil::pcmpos2milliseconds(
+        (size_t)playpos, static_cast<int>(Config::samplerate),
+        static_cast<int>(Config::channel));
+    audio_orbit_controller->format_time(time_milliseconds, formated_text);
     audio_orbit_controller->ui->time_current->setText(formated_text);
   }
 };
@@ -58,6 +61,18 @@ void AudioOrbitController::format_time(size_t time_milliseconds,
   auto timeseconds = time_milliseconds / 1000;
   auto timemilliseconds = time_milliseconds % 1000;
   text = QString("%1").arg(timeminutes, 2, 10, QChar('0')) + ":" +
-         QString("%1").arg(timeseconds, 2, 10, QChar('0')) + "." +
+         QString("%1").arg(timeseconds % 60, 2, 10, QChar('0')) + "." +
          QString("%1").arg(timemilliseconds, 3, 10, QChar('0'));
 }
+
+void AudioOrbitController::on_pauseorresume_clicked() {}
+
+void AudioOrbitController::on_seek_back_clicked() {}
+
+void AudioOrbitController::on_seek_forward_clicked() {}
+
+void AudioOrbitController::on_mute_button_clicked() {}
+
+void AudioOrbitController::on_volume_slider_valueChanged(int value) {}
+
+void AudioOrbitController::on_audio_info_button_clicked() {}

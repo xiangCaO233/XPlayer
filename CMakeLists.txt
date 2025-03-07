@@ -18,6 +18,7 @@ find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 add_subdirectory(./libdependencies)
 include_directories(/include)
+include_directories(./)
 
 set(PROJECT_SOURCES main.cpp mainwindow.cpp mainwindow.h mainwindow.ui)
 
@@ -29,6 +30,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     devicemanager.h
     devicemanager.cpp
     devicemanager.ui
+		clickableprogressbar.h
     audioorbitcontroller.h
     audioorbitcontroller.cpp
     audioorbitcontroller.ui
