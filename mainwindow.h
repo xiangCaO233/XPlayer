@@ -16,15 +16,17 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
- public:
+public:
   explicit MainWindow(QWidget* parent = nullptr);
   ~MainWindow() override;
 
- private slots:
+private slots:
   // 打开文件事件
   void on_open_file_triggered(bool checked);
 
- private:
+  void on_audio_file_browser_doubleClicked(const QModelIndex &index);
+
+private:
   Ui::MainWindow* ui;
   QString last_select_directory;
   // 音频管理器

@@ -10,10 +10,15 @@
 #include <QFileDialog>
 #include <QStandardItemModel>
 #include <filesystem>
+#include <memory>
 
 #include "./ui_mainwindow.h"
 #include "audiomanager.h"
 #include "include/AudioManager.h"
+#include "newaudioorbitdialog.h"
+
+// 声明元数据类型
+Q_DECLARE_METATYPE(std::shared_ptr<XSound>);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -75,6 +80,9 @@ MainWindow::MainWindow(QWidget *parent)
   // 显示表头
   ui->file_browser->setHeaderHidden(false);
 
+  // 注册音频数据类型
+  qRegisterMetaType<std::shared_ptr<XSound>>("XSoundptr");
+
   // 初始化音频管理器
   audio_manager = XAudioManager::newmanager();
 
@@ -125,16 +133,18 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
     QList<QStandardItem *> audio_row;
     auto handle_item = new QStandardItem(QString::number(handle));
     auto name_item = new QStandardItem(QString::fromStdString(name));
-    auto size =
-        ((double)(*audio_manager->get_audios())[handle]->get_pcm_data_size() *
-         4) /
-        1024.0 / 1024.0;
+    auto &audio = (*audio_manager->get_audios())[handle];
+    auto size = ((double)audio->get_pcm_data_size() * 4) / 1024.0 / 1024.0;
     auto size_item = new QStandardItem(QString::number(size, 'f', 2) + "MB");
 
     // 设置仅可选不可编辑
     handle_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     name_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
     size_item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    // 填充数据
+    handle_item->setData(QVariant::fromValue(audio));
+    name_item->setData(QVariant::fromValue(audio));
+    size_item->setData(QVariant::fromValue(audio));
 
     audio_row.append(handle_item);
     audio_row.append(name_item);
@@ -144,4 +154,17 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
         ->appendRow(audio_row);
   }
   // 设置文件管理器目录为最后一次打开的文件目录
+}
+
+// 双击音频项事件
+void MainWindow::on_audio_file_browser_doubleClicked(const QModelIndex &index) {
+  auto item = ((QStandardItemModel *)(ui->audio_file_browser->model()))
+                  ->itemFromIndex(index);
+  auto devices = audio_manager->get_outdevices();
+
+  NewAudioOrbitDialog norbitdialog(devices);
+  norbitdialog.setWindowTitle("添加音频轨道");
+  if (norbitdialog.exec() == QDialog::Accepted) {
+    // 确认
+  }
 }
