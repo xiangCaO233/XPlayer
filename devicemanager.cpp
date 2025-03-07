@@ -1,5 +1,7 @@
 #include "devicemanager.h"
 
+#include <qglobal.h>
+
 #include "audioorbitcontroller.h"
 #include "ui_devicemanager.h"
 #include "util.h"
@@ -13,6 +15,10 @@ DeviceManager::DeviceManager(std::shared_ptr<XOutputDevice> dev,
                                                Qt::white, QSize(24, 24)));
   ui->resetspeed_button->setIcon(
       qutil::colorSvgIcon(":/svg/svgs/speed.svg", Qt::white, QSize(24, 24)));
+
+  // 更新标签
+  ui->current_volume_label->setText("100%");
+  ui->current_speed_label->setText("1.00x");
 
   // 应用布局
   auto layout = new QVBoxLayout;
@@ -77,8 +83,68 @@ void DeviceManager::remove_audio_orbit(
   audio_orbits.erase(it);
 }
 
-void DeviceManager::on_speed_slider_valueChanged(int value)
-{
-
+// 播放速度slider值变化事件
+void DeviceManager::on_speed_slider_valueChanged(int value) {
+  if (value >= 10 && value <= 500) {
+    auto ratio = (double)value / 100.0;
+    ui->current_speed_label->setText(QString::number(ratio, 'f', 2) + "x");
+  }
 }
 
+// 播放速度slider释放事件
+void DeviceManager::on_speed_slider_sliderReleased() {
+  auto value = ui->speed_slider->value();
+  if (value >= 10 && value <= 500) {
+    auto ratio = (double)value / 100.0;
+    ui->current_speed_label->setText(QString::number(ratio, 'f', 2) + "x");
+    device->player->ratio((float)ratio);
+  }
+}
+
+// 重置播放速度事件
+void DeviceManager::on_resetspeed_button_clicked() {
+  auto ratio = 1.0;
+  ui->current_speed_label->setText(QString::number(ratio, 'f', 2) + "x");
+  device->player->ratio((float)ratio);
+}
+
+// 音量条值变化事件
+void DeviceManager::on_volume_slider_valueChanged(int value) {
+  auto volume = (double)value / 100.0;
+  ui->current_volume_label->setText(QString::number(value) + "%");
+  device->player->set_player_volume((float)volume);
+  update_volume_button_icon(value);
+}
+
+// 静音按钮事件
+void DeviceManager::on_mute_button_clicked() {
+  auto v = (float)ui->volume_slider->value();
+  // 切换静音
+  if (v != 0) {
+    last_volume = v / 100.0f;
+    ui->current_volume_label->setText(QString::number(0) + "%");
+    device->player->set_player_volume(0.0f);
+    update_volume_button_icon(0);
+  } else {
+    ui->current_volume_label->setText(QString::number(last_volume) + "%");
+    device->player->set_player_volume(last_volume);
+    update_volume_button_icon((int)(last_volume * 100.0f));
+  }
+}
+
+// 更新音量按钮图标
+void DeviceManager::update_volume_button_icon(int value) {
+  if (value >= 67) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumehigh.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else if (value >= 33) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemiddle.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else if (value > 0) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumelow.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemute.svg",
+                                                 Qt::white, QSize(24, 24)));
+  }
+}

@@ -46,13 +46,14 @@ AudioOrbitController::AudioOrbitController(
   ui->setupUi(this);
   // 设置进度条绑定的音频轨道
   ui->play_progress->setup_orbit(xaudioorbit);
+  ui->current_volume_label->setText(QString::number(xaudioorbit->volume * 100) +
+                                    "%");
   // 更新图标
   ui->seek_back->setIcon(qutil::colorSvgIcon(":/svg/svgs/seekbackward.svg",
                                              Qt::white, QSize(24, 24)));
   ui->seek_forward->setIcon(qutil::colorSvgIcon(":/svg/svgs/seekforward.svg",
                                                 Qt::white, QSize(24, 24)));
-  ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemiddle.svg",
-                                               Qt::white, QSize(24, 24)));
+  update_volume_button_icon((int)(xaudioorbit->volume * 100));
   ui->audio_info_button->setIcon(
       qutil::colorSvgIcon(":/svg/svgs/settings.svg", Qt::white, QSize(24, 24)));
   // 更新暂停按钮图标 
@@ -128,12 +129,12 @@ void AudioOrbitController::on_pauseorresume_clicked() {
 
 // 快退按键事件
 void AudioOrbitController::on_seek_back_clicked() {
-  // 获取当前时间并减少15000ms
+  // 获取当前时间并减少5000ms
   auto time_milliseconds =
       xutil::pcmpos2milliseconds((size_t)xaudio_orbit->playpos,
                                  static_cast<int>(Config::samplerate),
                                  static_cast<int>(Config::channel)) -
-      15000;
+      5000;
   // 非法检查
   if (time_milliseconds < 0) {
     time_milliseconds = 0;
@@ -149,15 +150,15 @@ void AudioOrbitController::on_seek_back_clicked() {
 
 // 快进按键事件
 void AudioOrbitController::on_seek_forward_clicked() {
-  // 获取当前时间并增加15000ms
+  // 获取当前时间并增加5000ms
   auto time_milliseconds =
       xutil::pcmpos2milliseconds((size_t)xaudio_orbit->playpos,
                                  static_cast<int>(Config::samplerate),
                                  static_cast<int>(Config::channel)) +
-      15000;
+      5000;
   // 非法检查
   if (time_milliseconds > total_time_milliseconds) {
-    time_milliseconds = total_time_milliseconds - 500;
+    time_milliseconds = total_time_milliseconds - 100;
   }
   // 更新属性
   xaudio_orbit->playpos = (double)xutil::milliseconds2pcmpos(
@@ -172,7 +173,42 @@ void AudioOrbitController::on_seek_forward_clicked() {
 void AudioOrbitController::on_mute_button_clicked() {}
 
 // 音量条值变化事件
-void AudioOrbitController::on_volume_slider_valueChanged(int value) {}
+void AudioOrbitController::on_volume_slider_valueChanged(int value) {
+  auto volume = (double)value / 100.0;
+  ui->current_volume_label->setText(QString::number(value) + "%");
+  xaudio_orbit->volume = ((float)volume);
+  update_volume_button_icon(value);
+}
 
 // 音频轨道设置按键事件
-void AudioOrbitController::on_audio_info_button_clicked() {}
+void AudioOrbitController::on_audio_info_button_clicked() {
+  auto v = (float)ui->volume_slider->value();
+  // 切换静音
+  if (v != 0) {
+    last_volume = v / 100.0f;
+    ui->current_volume_label->setText(QString::number(0) + "%");
+    xaudio_orbit->volume = 0.0f;
+    update_volume_button_icon(0);
+  } else {
+    ui->current_volume_label->setText(QString::number(last_volume) + "%");
+    xaudio_orbit->volume = last_volume;
+    update_volume_button_icon((int)(last_volume * 100.0f));
+  }
+}
+
+// 更新音量按钮图标
+void AudioOrbitController::update_volume_button_icon(int value) {
+  if (value >= 67) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumehigh.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else if (value >= 33) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemiddle.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else if (value > 0) {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumelow.svg",
+                                                 Qt::white, QSize(24, 24)));
+  } else {
+    ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemute.svg",
+                                                 Qt::white, QSize(24, 24)));
+  }
+}

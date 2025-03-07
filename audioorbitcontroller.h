@@ -50,12 +50,16 @@ class AudioOrbitController : public QWidget {
 
  private:
   Ui::AudioOrbitController *ui;
+  // 最后一次音量设置
+  float last_volume{1.0f};
   // 总时间
   size_t total_time_milliseconds;
   // 此控制器控制的音频轨道
   std::shared_ptr<XAudioOrbit> xaudio_orbit;
   // 更新当前位置标签
   void update_current_time_label(double time);
+  // 更新音量按钮图标
+  void update_volume_button_icon(int value);
 
   friend DeviceManager;
   friend TimeCallback;

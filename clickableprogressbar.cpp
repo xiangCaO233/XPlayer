@@ -19,7 +19,8 @@ ClickableProgressBar::~ClickableProgressBar() = default;
 // 播放位置改变槽
 void ClickableProgressBar::on_playpos_changed(double time) {
   // qDebug() << "进度条收到播放位置更新信号参数:" << time;
-  setValue((int)(time / (double)total_timemilliseconds * 100));
+  setValue((int)(time / (double)total_timemilliseconds * 1000));
+  repaint();
 }
 
 // 设置轨道信息
@@ -36,7 +37,7 @@ void ClickableProgressBar::mousePressEvent(QMouseEvent *event) {
   // qDebug() << "设置进度条信号参数:" << ratio *
   // (double)total_timemilliseconds;
 
-  setValue((int)(ratio * 100));
+  setValue((int)(ratio * 1000));
   pressed = true;
 }
 void ClickableProgressBar::mouseReleaseEvent(QMouseEvent *event) {
@@ -65,7 +66,8 @@ void ClickableProgressBar::mouseMoveEvent(QMouseEvent *event) {
 
   // 正在拖动
   if (pressed) {
-    setValue((int)(ratio * 100));
+    setValue((int)(ratio * 1000));
+    repaint();
     emit progressbar_set_signal(time);
   }
 }
