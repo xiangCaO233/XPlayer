@@ -2,6 +2,8 @@
 #define AUDIO_MANAGER_H
 
 #include <condition_variable>
+#include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <thread>
@@ -13,6 +15,39 @@ class XOutputDevice;
 class XAudioManager;
 class XPlayer;
 struct AVFormatContext;
+
+enum class transfertype;
+enum class mixtype;
+enum class channels;
+enum class sampleratetype;
+
+class Config {
+ public:
+  // 音频传输方式
+  static transfertype audio_transfer_method;
+  // 音频解码线程数(max128)
+  static int decode_thread_count;
+  // 混音方式
+  static mixtype mix_method;
+  // 混音处理时的环形缓冲区大小(设备性能越低这个需要越大)
+  // 越大时可能会增加延迟
+  static int mix_buffer_size;
+  // 播放音频时的声道数
+  static channels channel;
+  // 播放音频时的采样率
+  static sampleratetype samplerate;
+  // 播放音频的缓冲区大小
+  static int play_buffer_size;
+
+  // 保存路径
+  static std::string config_file_path;
+};
+
+namespace xutil {
+int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate, int channels);
+size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
+                           int channels);
+}  // namespace xutil
 
 class XSound {
  public:
@@ -42,9 +77,17 @@ class XSound {
   size_t get_pcm_data_size() const;
 };
 
+class PlayposCallBack {
+ public:
+  virtual ~PlayposCallBack() = default;
+  virtual void playpos_call(double playpos) = 0;
+};
+
 class XAudioOrbit {
  public:
   std::shared_ptr<XSound> sound;
+  // 回调列表
+  std::vector<std::shared_ptr<PlayposCallBack>> playpos_callbacks;
   // 播放指针
   double playpos{0.0};
   // 轨道音量
@@ -57,10 +100,13 @@ class XAudioOrbit {
   bool loop{false};
 
   // 构造XAudioOrbit
-  explicit XAudioOrbit(std::shared_ptr<XSound> audio = nullptr)
-      : sound(audio){};
+  explicit XAudioOrbit(std::shared_ptr<XSound> audio = nullptr);
   // 析构XAudioOrbit
   ~XAudioOrbit() = default;
+  // 添加播放位置回调
+  void add_playpos_callback(std::shared_ptr<PlayposCallBack> callback);
+  // 移除回调
+  void remove_playpos_callback(std::shared_ptr<PlayposCallBack> callback);
 };
 
 class XAuidoMixer {

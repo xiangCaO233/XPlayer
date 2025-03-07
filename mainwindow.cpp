@@ -13,7 +13,7 @@
 #include <memory>
 
 #include "./ui_mainwindow.h"
-#include "audiomanager.h"
+#include "devicemanager.h"
 #include "include/AudioManager.h"
 #include "newaudioorbitdialog.h"
 
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
       new QStandardItemModel(ui->audio_file_browser);
   audio_file_browser_model->setHorizontalHeaderLabels(
       QStringList() << QStringLiteral("句柄") << QStringLiteral("文件名")
-                    << QStringLiteral("大小"));
+                    << QStringLiteral("内存"));
   ui->audio_file_browser->setModel(audio_file_browser_model);
   ui->audio_file_browser->header()->setSectionResizeMode(
       0, QHeaderView::ResizeToContents);
@@ -91,10 +91,10 @@ MainWindow::MainWindow(QWidget *parent)
 
   for (const auto &[sdl_id, device] : *output_devices) {
     if (sdl_id == -1) continue;
-    auto controller = new AudioManager(device);
+    auto controller = new DeviceManager(device);
     ui->device_tab_widget->addTab(controller,
                                   QString::fromStdString(device->device_name));
-    auto &mixer = device->player->mixer;
+    devices.try_emplace(device, controller);
   }
 }
 
@@ -160,11 +160,37 @@ void MainWindow::on_open_file_triggered([[maybe_unused]] bool checked) {
 void MainWindow::on_audio_file_browser_doubleClicked(const QModelIndex &index) {
   auto item = ((QStandardItemModel *)(ui->audio_file_browser->model()))
                   ->itemFromIndex(index);
-  auto devices = audio_manager->get_outdevices();
+  auto sound = item->data().value<std::shared_ptr<XSound>>();
+  auto xdevices = audio_manager->get_outdevices();
 
-  NewAudioOrbitDialog norbitdialog(devices);
+  NewAudioOrbitDialog norbitdialog(xdevices);
   norbitdialog.setWindowTitle("添加音频轨道");
+
+  norbitdialog.set_audio_name(QString::fromStdString(sound->name));
+  norbitdialog.set_audio_duration(xutil::pcmpos2milliseconds(
+      sound->pcm_data.size(), static_cast<int>(Config::samplerate), 2));
+  norbitdialog.set_audio_memory(sound->pcm_data.size() * 4);
+
   if (norbitdialog.exec() == QDialog::Accepted) {
+    auto device = norbitdialog.choosed_device();
     // 确认
+    auto it = devices.find(device);
+    if (it == devices.end()) {
+      qDebug() << "设备有误";
+      return;
+    }
+    auto volume = norbitdialog.get_volume_setting();
+    auto speed = norbitdialog.get_speed_setting();
+    auto autoplay = norbitdialog.isautoplay();
+    auto isloop = norbitdialog.isloop();
+    // 获取设备管理器
+    auto device_controller = it->second;
+    // 构造音频轨道
+    auto orbit = std::make_shared<XAudioOrbit>(sound);
+    orbit->volume = (float)volume / 100.0f;
+    orbit->speed = (float)speed / 100.0f;
+    orbit->paused = autoplay;
+    orbit->loop = isloop;
+    device_controller->add_audio_orbit(orbit);
   }
 }

@@ -4,8 +4,12 @@
 #include <QWidget>
 #include <memory>
 
-class AudioManager;
+#include "include/AudioManager.h"
+
+class DeviceManager;
 class XAudioOrbit;
+
+class TimeCallback;
 
 namespace Ui {
 class AudioOrbitController;
@@ -23,7 +27,10 @@ class AudioOrbitController : public QWidget {
   Ui::AudioOrbitController *ui;
   // 此控制器控制的音频轨道
   std::shared_ptr<XAudioOrbit> xaudio_orbit;
-  friend AudioManager;
+  // 格式化时间
+  void format_time(size_t time, QString &text);
+  friend DeviceManager;
+  friend TimeCallback;
 };
 
 #endif  // AUDIOORBITCONTROLLER_H

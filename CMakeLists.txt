@@ -26,9 +26,9 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
     XPlayerpp
     MANUAL_FINALIZATION
     ${PROJECT_SOURCES}
-    audiomanager.h
-    audiomanager.cpp
-    audiomanager.ui
+    devicemanager.h
+    devicemanager.cpp
+    devicemanager.ui
     audioorbitcontroller.h
     audioorbitcontroller.cpp
     audioorbitcontroller.ui
