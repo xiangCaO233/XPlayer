@@ -4,6 +4,7 @@
 #include <qglobal.h>
 #include <qlist.h>
 #include <qmessagebox.h>
+#include <qnamespace.h>
 #include <qstandarditemmodel.h>
 #include <qstringliteral.h>
 #include <qwidget.h>
@@ -17,6 +18,7 @@
 #include "devicemanager.h"
 #include "include/AudioManager.h"
 #include "newaudioorbitdialog.h"
+#include "util.h"
 
 // 声明元数据类型
 Q_DECLARE_METATYPE(std::shared_ptr<XSound>);
@@ -31,7 +33,12 @@ MainWindow::MainWindow(QWidget *parent)
   for (int i = 0; i < 3; i++) appPath.cdUp();
 #endif  //__APPLE__
   last_select_directory = appPath.absolutePath();
-  qDebug() << last_select_directory;
+  ui->open_file->setIcon(
+      qutil::colorSvgIcon(":/svg/svgs/fileopen.svg", Qt::white, QSize(16, 16)));
+  ui->open_directory->setIcon(qutil::colorSvgIcon(":/svg/svgs/folderopen.svg",
+                                                  Qt::white, QSize(16, 16)));
+  ui->close_directory->setIcon(
+      qutil::colorSvgIcon(":/svg/svgs/close.svg", Qt::white, QSize(16, 16)));
 
   // 音频文件管理器模型
   auto audio_file_browser_model =
