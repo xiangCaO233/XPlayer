@@ -11,7 +11,7 @@ DeviceManager::DeviceManager(std::shared_ptr<XOutputDevice> dev,
     : QWidget(parent), device(dev), ui(new Ui::DeviceManager) {
   ui->setupUi(this);
   // 更新按钮图标
-  ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumemiddle.svg",
+  ui->mute_button->setIcon(qutil::colorSvgIcon(":/svg/svgs/volumehigh.svg",
                                                Qt::white, QSize(24, 24)));
   ui->resetspeed_button->setIcon(
       qutil::colorSvgIcon(":/svg/svgs/speed.svg", Qt::white, QSize(24, 24)));
@@ -94,7 +94,7 @@ void DeviceManager::on_speed_slider_valueChanged(int value) {
 // 播放速度slider释放事件
 void DeviceManager::on_speed_slider_sliderReleased() {
   auto value = ui->speed_slider->value();
-  if (value >= 10 && value <= 500) {
+  if (value >= 25 && value <= 400) {
     auto ratio = (double)value / 100.0;
     ui->current_speed_label->setText(QString::number(ratio, 'f', 2) + "x");
     device->player->ratio((float)ratio);
