@@ -17,6 +17,7 @@ class DeviceManager;
 
 class DeviceManager : public QWidget {
   Q_OBJECT
+  friend AudioOrbitController;
 
  public:
   explicit DeviceManager(std::shared_ptr<XOutputDevice> dev,
@@ -26,11 +27,11 @@ class DeviceManager : public QWidget {
   void add_audio_orbit(std::shared_ptr<XAudioOrbit> &audioorbit);
   // 移除音频轨道
   void remove_audio_orbit(std::shared_ptr<XAudioOrbit> &audioorbit);
- public slots:
-  // 轨道暂停按钮点击信号槽
-  void on_orbit_pausebutton_clicked();
 
  private slots:
+  // 轨道暂停按钮点击信号槽
+  void on_pauseorresume_clicked();
+
   void on_speed_slider_valueChanged(int value);
 
   void on_speed_slider_sliderReleased();

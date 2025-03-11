@@ -25,9 +25,8 @@ class TimeCallback : public PlayposCallBack {
   virtual void playpos_call(double playpos) override {
     // 回调中设置当前播放时间
 
-    auto time_milliseconds = xutil::pcmpos2milliseconds(
-        (size_t)playpos, static_cast<int>(Config::samplerate),
-        static_cast<int>(Config::channel));
+    auto time_milliseconds = xutil::plannerpcmpos2milliseconds(
+        (size_t)playpos, static_cast<int>(Config::samplerate));
 
     audio_orbit_controller->update_current_time_label(
         (double)time_milliseconds);
@@ -70,15 +69,14 @@ AudioOrbitController::AudioOrbitController(
                    &ClickableProgressBar::on_playpos_changed);
   // 连接暂停按钮点击信号
   QObject::connect(this, &AudioOrbitController::pause_button_clicked_signal,
-                   devicemanager, &DeviceManager::on_orbit_pausebutton_clicked);
+                   devicemanager, &DeviceManager::on_pauseorresume_clicked);
 
   // 初始化轨道控制器标题
   ui->audio_title->setText(QString::fromStdString(xaudio_orbit->sound->name));
 
   // 初始化总播放时间
-  total_time_milliseconds = xutil::pcmpos2milliseconds(
-      xaudioorbit->sound->pcm_data.size(), static_cast<int>(Config::samplerate),
-      static_cast<int>(Config::channel));
+  total_time_milliseconds = xutil::plannerpcmpos2milliseconds(
+      xaudioorbit->sound->pcm[0].size(), static_cast<int>(Config::samplerate));
   QString formated_text;
   format_time(total_time_milliseconds, formated_text);
   ui->time_total->setText(formated_text);
@@ -112,9 +110,8 @@ void AudioOrbitController::update_current_time_label(double time) {
 void AudioOrbitController::on_progress_changed(double time) {
   // qDebug() << "控制器收到进度条改变信号参数" << time;
   // 更新属性
-  xaudio_orbit->playpos = (double)xutil::milliseconds2pcmpos(
-      (size_t)time, static_cast<int>(Config::samplerate),
-      static_cast<int>(Config::channel));
+  xaudio_orbit->playpos = (double)xutil::milliseconds2plannerpcmpos(
+      (size_t)time, static_cast<int>(Config::samplerate));
   update_current_time_label(time);
 }
 // 暂停/播放按键事件
@@ -131,18 +128,16 @@ void AudioOrbitController::on_pauseorresume_clicked() {
 void AudioOrbitController::on_seek_back_clicked() {
   // 获取当前时间并减少5000ms
   auto time_milliseconds =
-      xutil::pcmpos2milliseconds((size_t)xaudio_orbit->playpos,
-                                 static_cast<int>(Config::samplerate),
-                                 static_cast<int>(Config::channel)) -
+      xutil::plannerpcmpos2milliseconds((size_t)xaudio_orbit->playpos,
+                                        static_cast<int>(Config::samplerate)) -
       5000;
   // 非法检查
   if (time_milliseconds < 0) {
     time_milliseconds = 0;
   }
   // 更新属性
-  xaudio_orbit->playpos = (double)xutil::milliseconds2pcmpos(
-      (size_t)time_milliseconds, static_cast<int>(Config::samplerate),
-      static_cast<int>(Config::channel));
+  xaudio_orbit->playpos = (double)xutil::milliseconds2plannerpcmpos(
+      time_milliseconds, static_cast<int>(Config::samplerate));
   // 更新label并发送信号
   update_current_time_label((double)time_milliseconds);
   emit time_update_signal((double)time_milliseconds);
@@ -152,18 +147,16 @@ void AudioOrbitController::on_seek_back_clicked() {
 void AudioOrbitController::on_seek_forward_clicked() {
   // 获取当前时间并增加5000ms
   auto time_milliseconds =
-      xutil::pcmpos2milliseconds((size_t)xaudio_orbit->playpos,
-                                 static_cast<int>(Config::samplerate),
-                                 static_cast<int>(Config::channel)) +
+      xutil::plannerpcmpos2milliseconds((size_t)xaudio_orbit->playpos,
+                                        static_cast<int>(Config::samplerate)) +
       5000;
   // 非法检查
   if (time_milliseconds > total_time_milliseconds) {
     time_milliseconds = total_time_milliseconds - 100;
   }
   // 更新属性
-  xaudio_orbit->playpos = (double)xutil::milliseconds2pcmpos(
-      (size_t)time_milliseconds, static_cast<int>(Config::samplerate),
-      static_cast<int>(Config::channel));
+  xaudio_orbit->playpos = (double)xutil::milliseconds2plannerpcmpos(
+      time_milliseconds, static_cast<int>(Config::samplerate));
   // 更新label并发送信号
   update_current_time_label((double)time_milliseconds);
   emit time_update_signal((double)time_milliseconds);

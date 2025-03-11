@@ -26,19 +26,27 @@ void ClickableProgressBar::on_playpos_changed(double time) {
 // 设置轨道信息
 void ClickableProgressBar::setup_orbit(std::shared_ptr<XAudioOrbit> orbit) {
   audio_orbit = orbit;
-  total_timemilliseconds = xutil::pcmpos2milliseconds(
-      audio_orbit->sound->pcm_data.size(), static_cast<int>(Config::samplerate),
-      static_cast<int>(Config::channel));
+  total_timemilliseconds = xutil::plannerpcmpos2milliseconds(
+      audio_orbit->sound->pcm[0].size(), static_cast<int>(Config::samplerate));
 }
 
 void ClickableProgressBar::mousePressEvent(QMouseEvent *event) {
   // qDebug() << "鼠标按下,发送设置进度条信号";
-  emit progressbar_set_signal(ratio * (double)total_timemilliseconds);
   // qDebug() << "设置进度条信号参数:" << ratio *
   // (double)total_timemilliseconds;
-
-  setValue((int)(ratio * 1000));
   pressed = true;
+
+  if (ratio <= 0) {
+    setValue(0);
+    emit progressbar_set_signal(0);
+  } else if (ratio >= 1) {
+    setValue(1000);
+    emit progressbar_set_signal((double)total_timemilliseconds);
+  } else {
+    setValue((int)(ratio * 1000));
+    emit progressbar_set_signal(ratio * (double)total_timemilliseconds);
+  }
+  repaint();
 }
 void ClickableProgressBar::mouseReleaseEvent(QMouseEvent *event) {
   pressed = false;
@@ -66,8 +74,16 @@ void ClickableProgressBar::mouseMoveEvent(QMouseEvent *event) {
 
   // 正在拖动
   if (pressed) {
-    setValue((int)(ratio * 1000));
+    if (ratio <= 0) {
+      setValue(0);
+      emit progressbar_set_signal(0);
+    } else if (ratio >= 1) {
+      setValue(1000);
+      emit progressbar_set_signal(1000);
+    } else {
+      setValue((int)(ratio * 1000));
+      emit progressbar_set_signal(time);
+    }
     repaint();
-    emit progressbar_set_signal(time);
   }
 }

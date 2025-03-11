@@ -28,6 +28,7 @@ class AudioOrbitController : public QWidget {
   ~AudioOrbitController() override;
   // 格式化时间
   static void format_time(size_t time, QString &text);
+
  signals:
   void time_update_signal(double time);
   void pause_button_clicked_signal();

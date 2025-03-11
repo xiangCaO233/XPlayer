@@ -182,9 +182,9 @@ void MainWindow::on_audio_file_browser_doubleClicked(const QModelIndex &index) {
   norbitdialog.setWindowTitle("添加音频轨道");
 
   norbitdialog.set_audio_name(QString::fromStdString(sound->name));
-  norbitdialog.set_audio_duration(xutil::pcmpos2milliseconds(
-      sound->pcm_data.size(), static_cast<int>(Config::samplerate), 2));
-  norbitdialog.set_audio_memory(sound->pcm_data.size() * 4);
+  norbitdialog.set_audio_duration(xutil::plannerpcmpos2milliseconds(
+      sound->pcm[0].size(), static_cast<int>(Config::samplerate)));
+  norbitdialog.set_audio_memory(sound->pcm[0].size() * 4);
 
   if (norbitdialog.exec() == QDialog::Accepted) {
     auto device = norbitdialog.choosed_device();

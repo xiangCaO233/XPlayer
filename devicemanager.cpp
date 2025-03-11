@@ -36,7 +36,7 @@ DeviceManager::DeviceManager(std::shared_ptr<XOutputDevice> dev,
 DeviceManager::~DeviceManager() { delete ui; }
 
 // 轨道暂停按钮点击信号槽
-void DeviceManager::on_orbit_pausebutton_clicked() {
+void DeviceManager::on_pauseorresume_clicked() {
   // 检查目前是否需要播放
   bool shouldplay{false};
   for (const auto &orbit : audio_orbits) {
