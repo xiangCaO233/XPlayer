@@ -55,8 +55,10 @@ class Config {
 
 namespace xutil {
 int64_t pcmpos2milliseconds(size_t pcmpos, int pcmsamplerate, int channels);
+int64_t plannerpcmpos2milliseconds(size_t plannerpcmpos, int pcmsamplerate);
 size_t milliseconds2pcmpos(int64_t milliseconds, int pcmsamplerate,
                            int channels);
+size_t milliseconds2plannerpcmpos(int64_t milliseconds, int pcmsamplerate);
 }  // namespace xutil
 
 class ringbuffer {
@@ -90,8 +92,8 @@ class XSound {
  public:
   // 句柄(id)
   int handle;
-  // pcm声音数据
-  std::vector<float> pcm_data;
+  // pcm数据(分声道)
+  std::vector<std::vector<float>> pcm;
   // 音频文件名
   const std::string name;
   // 音频路径
@@ -163,8 +165,8 @@ class XAuidoMixer {
   XPlayer *des_player;
   // 未知音轨
   XAudioOrbit unknown_orbit;
-  // 全部音轨的原始数据
-  std::vector<std::vector<float>> src_pcms;
+  // 全部音轨的原始数据-Planner
+  std::vector<std::vector<std::vector<float>>> pcms;
   // 着色器程序
   // Shader* shader;
   // 顶点着色器源代码
@@ -176,8 +178,8 @@ class XAuidoMixer {
   void mix(const std::vector<std::shared_ptr<XAudioOrbit>> &src_sounds,
            std::vector<float> &mixed_pcm, float global_volume);
   void mix_pcmdata(std::vector<float> &mixed_pcm, float global_volume);
-  void resample(std::vector<float> &pcm, size_t des_size);
-  void reset_pcms();
+  // Planner存储的数据拉伸
+  void stretch(std::vector<std::vector<float>> &pcm, size_t des_size);
   // 向播放器发送数据的线程函数
   void send_pcm_thread();
   // 添加音频轨道
