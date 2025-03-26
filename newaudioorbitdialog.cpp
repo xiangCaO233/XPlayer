@@ -1,6 +1,6 @@
 #include "newaudioorbitdialog.h"
 
-#include "include/AudioManager.h"
+#include "AudioManager.h"
 #include "ui_newaudioorbitdialog.h"
 
 NewAudioOrbitDialog::NewAudioOrbitDialog(

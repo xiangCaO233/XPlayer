@@ -14,15 +14,13 @@ class TimeCallback : public PlayposCallBack {
   // 控制器指针
   AudioOrbitController *audio_orbit_controller;
 
-  TimeCallback(AudioOrbitController *controller) : PlayposCallBack() {
-    // 构造传递控制器指针
-    audio_orbit_controller = controller;
-  }
+  TimeCallback(AudioOrbitController *controller)
+      : PlayposCallBack(), audio_orbit_controller(controller) {}
 
-  virtual ~TimeCallback() override = default;
+  ~TimeCallback() override = default;
 
   // 实现回调函数
-  virtual void playpos_call(double playpos) override {
+  void playpos_call(double playpos) override {
     // 回调中设置当前播放时间
 
     auto time_milliseconds = xutil::plannerpcmpos2milliseconds(
@@ -37,23 +35,32 @@ class TimeCallback : public PlayposCallBack {
 };
 
 AudioOrbitController::AudioOrbitController(
-    std::shared_ptr<XAudioOrbit> &xaudioorbit, DeviceManager *devicemanager,
-    QWidget *parent)
+    const std::shared_ptr<XAudioOrbit> &xaudioorbit,
+    const DeviceManager *devicemanager, QWidget *parent)
     : QWidget(parent),
       xaudio_orbit(xaudioorbit),
       ui(new Ui::AudioOrbitController) {
   ui->setupUi(this);
   // 设置进度条绑定的音频轨道
   ui->play_progress->setup_orbit(xaudioorbit);
+  ui->volume_slider->setValue(int(xaudioorbit->volume * 100));
   ui->current_volume_label->setText(QString::number(xaudioorbit->volume * 100) +
                                     "%");
+  ui->speed_slider->setValue(int(xaudioorbit->speed * 100));
+  ui->current_speed_label->setText(QString::number(xaudioorbit->speed * 100) +
+                                   "%");
   // 更新图标
   ui->seek_back->setIcon(qutil::colorSvgIcon(":/svg/svgs/seekbackward.svg",
                                              Qt::white, QSize(24, 24)));
   ui->seek_forward->setIcon(qutil::colorSvgIcon(":/svg/svgs/seekforward.svg",
                                                 Qt::white, QSize(24, 24)));
+  // 更新速度图标
+  ui->reset_speed_button->setIcon(
+      qutil::colorSvgIcon(":/svg/svgs/speed.svg", Qt::white, QSize(24, 24)));
+
+  // 更新音量图标
   update_volume_button_icon((int)(xaudioorbit->volume * 100));
-  ui->audio_info_button->setIcon(
+  ui->audio_settings->setIcon(
       qutil::colorSvgIcon(":/svg/svgs/settings.svg", Qt::white, QSize(24, 24)));
   // 更新暂停按钮图标 
   ui->pauseorresume->setIcon(qutil::colorSvgIcon(

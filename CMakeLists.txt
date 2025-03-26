@@ -17,7 +17,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Svg)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Svg)
 
 add_subdirectory(./libdependencies)
-include_directories(/include)
+include_directories(./libdependencies/include)
 include_directories(./)
 
 set(PROJECT_SOURCES main.cpp mainwindow.cpp mainwindow.h mainwindow.ui)

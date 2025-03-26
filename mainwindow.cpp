@@ -15,8 +15,8 @@
 #include <memory>
 
 #include "./ui_mainwindow.h"
+#include "AudioManager.h"
 #include "devicemanager.h"
-#include "include/AudioManager.h"
 #include "newaudioorbitdialog.h"
 #include "util.h"
 

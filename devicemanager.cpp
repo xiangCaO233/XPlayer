@@ -16,10 +16,6 @@ DeviceManager::DeviceManager(std::shared_ptr<XOutputDevice> dev,
   ui->resetspeed_button->setIcon(
       qutil::colorSvgIcon(":/svg/svgs/speed.svg", Qt::white, QSize(24, 24)));
 
-  // 更新标签
-  ui->current_volume_label->setText("100%");
-  ui->current_speed_label->setText("1.00x");
-
   // 应用布局
   auto layout = new QVBoxLayout;
   layout->setSpacing(0);
@@ -31,6 +27,14 @@ DeviceManager::DeviceManager(std::shared_ptr<XOutputDevice> dev,
   device->creat_player();
   device->player->start();
   device->player->pause();
+
+  // 更新标签
+  ui->current_volume_label->setText(
+      QString::number(device->player->global_volume * 100) + "%");
+  ui->volume_slider->setValue(int(device->player->global_volume * 100));
+  ui->speed_slider->setValue(int(device->player->global_speed * 100));
+  ui->current_speed_label->setText(
+      QString::number(device->player->global_speed * 100) + "%");
 }
 
 DeviceManager::~DeviceManager() { delete ui; }

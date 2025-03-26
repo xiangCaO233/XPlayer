@@ -6,7 +6,7 @@
 #include <QWidget>
 #include <memory>
 
-#include "include/AudioManager.h"
+#include "AudioManager.h"
 
 class DeviceManager;
 class XAudioOrbit;
@@ -22,8 +22,8 @@ class AudioOrbitController : public QWidget {
   Q_OBJECT
 
  public:
-  explicit AudioOrbitController(std::shared_ptr<XAudioOrbit> &xaudioorbit,
-                                DeviceManager *devicemanager,
+  explicit AudioOrbitController(const std::shared_ptr<XAudioOrbit> &xaudioorbit,
+                                const DeviceManager *devicemanager,
                                 QWidget *parent = nullptr);
   ~AudioOrbitController() override;
   // 格式化时间

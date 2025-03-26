@@ -1,7 +1,7 @@
 #include "clickableprogressbar.h"
 
+#include "AudioManager.h"
 #include "audioorbitcontroller.h"
-#include "include/AudioManager.h"
 
 ClickableProgressBar::ClickableProgressBar(QWidget *parent)
     : QProgressBar(parent) {
