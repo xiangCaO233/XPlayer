@@ -195,6 +195,18 @@ void AudioOrbitController::on_volume_slider_valueChanged(int value) {
   update_volume_button_icon(value);
 }
 
+// 速度条变化
+void AudioOrbitController::on_speed_slider_valueChanged(int value) {
+  auto speed = (double)value / 100.0;
+  ui->current_speed_label->setText(QString::number(value) + "%");
+  xaudio_orbit->speed = ((float)speed);
+}
+
+// 重置音频轨道播放速度
+void AudioOrbitController::on_reset_speed_button_clicked() {
+  ui->current_speed_label->setText(QString::number(100) + "%");
+  xaudio_orbit->speed = 1.0f;
+}
 // 音频轨道设置按键事件
 void AudioOrbitController::on_audio_info_button_clicked() {}
 

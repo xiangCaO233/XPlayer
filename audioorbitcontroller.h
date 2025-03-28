@@ -49,6 +49,10 @@ class AudioOrbitController : public QWidget {
 
   void on_audio_info_button_clicked();
 
+  void on_speed_slider_valueChanged(int value);
+
+  void on_reset_speed_button_clicked();
+
  private:
   Ui::AudioOrbitController *ui;
   // 最后一次音量设置
